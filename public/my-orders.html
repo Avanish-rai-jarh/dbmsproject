@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>My Orders | CampusBite</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/my-orders.css">
+
+    <script src="js/my-orders.js" defer></script>
+</head>
+
+<body>
+    <header class="orders-header">
+        <a href="index.html" class="orders-brand">
+            <span class="orders-brand-icon">C</span>
+            <span>CampusBite</span>
+        </a>
+
+        <a href="index.html" class="orders-back-link">
+            ← Back to Home
+        </a>
+    </header>
+
+    <main class="orders-container">
+
+        <section class="orders-heading">
+            <p class="orders-eyebrow">YOUR CAMPUS ORDER</p>
+            <h1>My Orders</h1>
+            <p>View your previous orders and track their latest status.</p>
+        </section>
+
+        <section class="orders-summary">
+            <div class="summary-card">
+                <span>Total Orders</span>
+                <strong id="totalOrders">0</strong>
+            </div>
+
+            <div class="summary-card">
+                <span>Active Orders</span>
+                <strong id="activeOrders">0</strong>
+            </div>
+
+            <div class="summary-card">
+                <span>Completed Orders</span>
+                <strong id="completedOrders">0</strong>
+            </div>
+        </section>
+
+        <div
+            id="ordersMessage"
+            class="orders-message"
+            role="status"
+            aria-live="polite"
+        >
+            Loading your orders...
+        </div>
+
+        <section id="ordersList" class="orders-list"></section>
+
+        <section id="emptyOrders" class="empty-orders" hidden>
+            <div class="empty-orders-icon">📦</div>
+            <h2>No orders yet</h2>
+            <p>Your orders will appear here after you place your first order.</p>
+            <a href="index.html#menu" class="orders-primary-button">
+                Explore Menu
+            </a>
+        </section>
+
+        <div class="orders-footer-link">
+            <a href="index.html#menu">← Continue shopping</a>
+        </div>
+
+    </main>
+
+    <footer class="orders-page-footer">
+        <span>CampusBite © 2026</span>
+        <span>Powered by Oracle Database</span>
+    </footer>
+</body>
+</html>

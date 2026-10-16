@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Checkout | CampusBite</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/checkout.css">
+
+    <script src="js/checkout.js" defer></script>
+</head>
+
+<body>
+    <header class="checkout-header">
+        <a href="index.html" class="brand">
+            <span class="brand-icon">C</span>
+            <span>CampusBite</span>
+        </a>
+
+        <a href="cart.html" class="back-link">← Back to cart</a>
+    </header>
+
+    <main class="checkout-container">
+
+        <section class="checkout-heading">
+            <p class="eyebrow">ALMOST THERE</p>
+            <h1>Checkout</h1>
+            <p>Confirm your details and place your campus order.</p>
+        </section>
+
+        <div id="checkoutMessage" class="checkout-message" role="alert" hidden></div>
+
+        <div class="checkout-layout">
+
+            <section class="checkout-card">
+                <h2>Customer Details</h2>
+
+                <form id="checkoutForm">
+
+                    <div class="form-group">
+                        <label for="customerName">Full name</label>
+                        <input
+                            type="text"
+                            id="customerName"
+                            name="customer_name"
+                            minlength="2"
+                            maxlength="100"
+                            placeholder="Enter your full name"
+                            autocomplete="name"
+                            required
+                        >
+                    </div>
+
+                    <div class="form-group">
+                        <label for="phone">Phone number</label>
+                        <input
+                            type="tel"
+                            id="phone"
+                            name="phone"
+                            maxlength="15"
+                            placeholder="Enter your phone number"
+                            autocomplete="tel"
+                        >
+                        <small>Optional</small>
+                    </div>
+
+                    <h2 class="payment-heading">Payment Method</h2>
+
+                    <div class="payment-options">
+
+                        <label class="payment-option">
+                            <input
+                                type="radio"
+                                name="payment_method"
+                                value="CASH"
+                                checked
+                            >
+                            <span>
+                                <strong>Cash</strong>
+                                <small>Pay at the canteen</small>
+                            </span>
+                        </label>
+
+                        <label class="payment-option">
+                            <input
+                                type="radio"
+                                name="payment_method"
+                                value="UPI"
+                            >
+                            <span>
+                                <strong>UPI</strong>
+                                <small>Payment gateway not connected</small>
+                            </span>
+                        </label>
+
+                        <label class="payment-option">
+                            <input
+                                type="radio"
+                                name="payment_method"
+                                value="CARD"
+                            >
+                            <span>
+                                <strong>Card</strong>
+                                <small>Payment gateway not connected</small>
+                            </span>
+                        </label>
+
+                    </div>
+
+                    <p class="payment-note">
+                        This is a demonstration checkout. No online payment
+                        will be charged. Payment status will remain pending.
+                    </p>
+
+                    <button
+                        type="submit"
+                        id="placeOrderButton"
+                        class="place-order-button"
+                    >
+                        Place Order →
+                    </button>
+
+                    <a href="cart.html" class="return-link">
+                        Return to cart
+                    </a>
+
+                </form>
+            </section>
+
+            <aside class="checkout-card order-summary">
+                <h2>Your Order</h2>
+
+                <div id="checkoutItems" class="checkout-items">
+                    <p>Loading your order...</p>
+                </div>
+
+                <div class="summary-divider"></div>
+
+                <div class="summary-row">
+                    <span>Total quantity</span>
+                    <span id="checkoutQuantity">0</span>
+                </div>
+
+                <div class="summary-row final-total">
+                    <strong>Total</strong>
+                    <strong id="checkoutTotal">₹0.00</strong>
+                </div>
+
+                <p class="summary-note">
+                    Final prices and availability are verified by the server.
+                </p>
+            </aside>
+
+        </div>
+    </main>
+
+    <footer class="checkout-footer">
+        <span>CampusBite © 2026</span>
+        <span>Powered by Oracle Database</span>
+    </footer>
+</body>
+</html>

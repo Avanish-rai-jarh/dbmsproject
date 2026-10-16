@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Order Confirmed | CampusBite</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/order-confirmation.css">
+
+    <script src="js/order-confirmation.js" defer></script>
+</head>
+
+<body>
+    <header class="confirmation-header">
+        <a href="index.html" class="confirmation-brand">
+            <span class="brand-icon">C</span>
+            <span>CampusBite</span>
+        </a>
+    </header>
+
+    <main class="confirmation-container">
+
+        <section class="confirmation-card">
+
+            <div class="success-icon" aria-hidden="true">✓</div>
+
+            <p class="eyebrow">CAMPUSBITE ORDER</p>
+
+            <h1>Order placed successfully!</h1>
+
+            <p class="confirmation-description">
+                Thank you for ordering with CampusBite.
+                Keep your token number for collecting your order.
+            </p>
+
+            <div id="confirmationMessage" class="confirmation-message" role="alert" hidden></div>
+
+            <div id="orderDetails" hidden>
+
+                <div class="token-box">
+                    <p>Your Token Number</p>
+                    <strong id="tokenNumber">—</strong>
+                    <small>Keep this number for order collection.</small>
+                </div>
+
+                <div class="order-information">
+                    <div>
+                        <span>Order ID</span>
+                        <strong id="orderId">—</strong>
+                    </div>
+
+                    <div>
+                        <span>Customer</span>
+                        <strong id="customerName">—</strong>
+                    </div>
+
+                    <div>
+                        <span>Order Status</span>
+                        <strong id="orderStatus">—</strong>
+                    </div>
+
+                    <div>
+                        <span>Payment Method</span>
+                        <strong id="paymentMethod">—</strong>
+                    </div>
+
+                    <div>
+                        <span>Payment Status</span>
+                        <strong id="paymentStatus">—</strong>
+                    </div>
+                </div>
+
+                <div class="confirmation-divider"></div>
+
+                <h2>Order Summary</h2>
+
+                <div id="confirmedItems" class="confirmed-items"></div>
+
+                <div class="confirmation-total">
+                    <span>Total Amount</span>
+                    <strong id="confirmedTotal">₹0.00</strong>
+                </div>
+
+            </div>
+
+            <div class="confirmation-actions">
+                <a href="index.html" class="primary-action">Back to Home</a>
+                <a href="menu.html" class="secondary-action">Order More Food</a>
+            </div>
+
+        </section>
+
+    </main>
+
+    <footer class="confirmation-footer">
+        <span>CampusBite © 2026</span>
+        <span>Powered by Oracle Database</span>
+    </footer>
+</body>
+</html>

@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>CampusBite | Your Cart</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/cart.css">
+
+    <script src="js/cart.js" defer></script>
+</head>
+
+<body>
+
+    <header class="navbar">
+        <a href="/" class="logo">
+            <span class="logo-icon">C</span>
+            CampusBite
+        </a>
+
+        <nav>
+            <a href="/">Home</a>
+            <a href="/#menu">Our Menu</a>
+        </nav>
+
+        <a href="/" class="back-to-menu">
+            ← Continue shopping
+        </a>
+    </header>
+
+    <main class="cart-page">
+
+        <section class="cart-page-heading">
+            <span class="eyebrow">YOUR CAMPUS ORDER</span>
+            <h1>Your Shopping Cart</h1>
+            <p>Review your items before proceeding to checkout.</p>
+        </section>
+
+        <div id="cartMessage" class="cart-message" role="status">
+            Loading your cart...
+        </div>
+
+        <section class="cart-layout">
+
+            <div class="cart-list-panel">
+
+                <div class="cart-list-heading">
+                    <h2>Cart Items</h2>
+                    <span id="itemCount">0 items</span>
+                </div>
+
+                <div id="cartItems" class="cart-list"></div>
+
+                <a href="/#menu" class="continue-shopping">
+                    ← Add more items
+                </a>
+
+            </div>
+
+            <aside class="order-summary">
+
+                <h2>Order Summary</h2>
+
+                <div class="summary-row">
+                    <span>Total quantity</span>
+                    <span id="summaryQuantity">0</span>
+                </div>
+
+                <div class="summary-row">
+                    <span>Subtotal</span>
+                    <span id="summarySubtotal">₹0.00</span>
+                </div>
+
+                <div class="summary-divider"></div>
+
+                <div class="summary-total">
+                    <span>Total</span>
+                    <strong id="summaryTotal">₹0.00</strong>
+                </div>
+
+                <button
+                    id="checkoutButton"
+                    class="checkout-button"
+                    type="button"
+                    disabled
+                >
+                    Proceed to checkout →
+                </button>
+
+                <p class="summary-note">
+                    Final prices and availability will be verified by the server.
+                </p>
+
+            </aside>
+
+        </section>
+
+    </main>
+
+    <footer>
+        <span>CampusBite © 2026</span>
+        <span>Powered by Oracle Database</span>
+    </footer>
+
+</body>
+</html>

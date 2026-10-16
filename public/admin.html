@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+        <title>CampusBite | Admin Panel</title>
+
+        <link rel="stylesheet" href="css/admin.css">
+        <script src="js/admin.js" defer></script>
+    </head>
+
+    <body>
+
+        <!-- HEADER -->
+        <header class="topbar">
+            <a href="/" class="brand">
+                <span class="brand-icon">C</span>
+                CampusBite
+                <span class="admin-label">ADMIN</span>
+            </a>
+
+            <button
+                type="button"
+                id="adminLogoutButton"
+                class="admin-logout-button">
+                Logout
+            </button>
+        </header>
+
+        <main class="dashboard">
+
+            <!-- MENU MANAGEMENT HEADER -->
+            <section class="welcome">
+                <div class="welcome-text">
+                    <span class="eyebrow">MANAGEMENT DASHBOARD</span>
+
+                    <h2 id="adminGreeting">Welcome back, Admin 👋</h2>
+
+                    <h1>Menu Management</h1>
+                    <p>Add food items and manage your canteen menu.</p>
+                </div>
+
+                <div class="dashboard-icon">🍽️</div>
+            </section>
+
+            <!-- MENU STATISTICS -->
+            <section class="stats">
+                <article class="stat-card">
+                    <span>Total menu items</span>
+                    <strong id="totalItems">0</strong>
+                    <small>Items stored in Oracle</small>
+                </article>
+
+                <article class="stat-card">
+                    <span>Available items</span>
+                    <strong id="availableItems">0</strong>
+                    <small>Currently available</small>
+                </article>
+
+                <article class="stat-card">
+                    <span>Unavailable items</span>
+                    <strong id="unavailableItems">0</strong>
+                    <small>Currently unavailable</small>
+                </article>
+            </section>
+
+            <!-- CATEGORY MANAGEMENT -->
+            <section class="panel category-panel">
+                <div class="panel-heading">
+                    <div>
+                        <span class="eyebrow">CATEGORY MANAGEMENT</span>
+                        <h2>Manage food categories</h2>
+                    </div>
+                </div>
+
+                <form id="addCategoryForm" class="category-form">
+                    <div class="form-group">
+                        <label for="categoryName">New category</label>
+
+                        <input
+                            type="text"
+                            id="categoryName"
+                            maxlength="50"
+                            placeholder="e.g. Snacks, Meals, Drinks"
+                            required>
+                    </div>
+
+                    <button
+                        type="submit"
+                        id="categoryButton"
+                        class="primary-button">
+                        Add category
+                    </button>
+                </form>
+
+                <p
+                    id="categoryMessage"
+                    class="form-message"
+                    role="status">
+                </p>
+            </section>
+
+            <!-- ADD ITEM AND CURRENT MENU -->
+            <section class="content-grid">
+
+                <!-- ADD FOOD ITEM -->
+                <article class="panel form-panel">
+                    <div class="panel-heading">
+                        <div>
+                            <span class="eyebrow">MENU EDITOR</span>
+                            <h2>Add food item</h2>
+                        </div>
+
+                        <span class="heading-icon">＋</span>
+                    </div>
+
+                    <form id="addItemForm">
+
+                        <div class="form-group">
+                            <label for="itemName">Food name</label>
+
+                            <input
+                                type="text"
+                                id="itemName"
+                                name="item_name"
+                                placeholder="e.g. Veg Sandwich"
+                                maxlength="100"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="categoryId">Category</label>
+
+                            <select
+                                id="categoryId"
+                                name="category_id"
+                                required>
+                                <option value>Loading categories...</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="price">Price (₹)</label>
+
+                            <input
+                                type="number"
+                                id="price"
+                                name="price"
+                                placeholder="e.g. 60"
+                                min="0"
+                                max="999999.99"
+                                step="0.01"
+                                required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="imageUrl">Food Image URL</label>
+
+                            <input
+                                type="url"
+                                id="imageUrl"
+                                name="image_url"
+                                placeholder="https://example.com/food-image.jpg"
+                                maxlength="1000">
+
+                            <small>Enter a direct URL to the food image.</small>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Image Preview</label>
+
+                            <div id="imagePreviewContainer" hidden>
+                                <img
+                                    id="imagePreview"
+                                    alt="Food image preview"
+                                    style="
+                                    width: 100%;
+                                    max-width: 260px;
+                                    height: 160px;
+                                    object-fit: cover;
+                                    border-radius: 12px;
+                                    display: block;
+                                ">
+                            </div>
+
+                            <p id="imagePreviewMessage">
+                                Enter an image URL to preview it.
+                            </p>
+                        </div>
+
+                        <button
+                            type="submit"
+                            id="saveButton"
+                            class="primary-button">
+                            Add to menu →
+                        </button>
+
+                        <p
+                            id="formMessage"
+                            class="form-message"
+                            role="status">
+                        </p>
+
+                    </form>
+                </article>
+
+                <!-- CURRENT MENU -->
+                <article class="panel table-panel">
+                    <div class="panel-heading">
+                        <div>
+                            <span class="eyebrow">DATABASE RECORDS</span>
+                            <h2>Current menu</h2>
+                        </div>
+
+                        <button
+                            type="button"
+                            id="refreshButton"
+                            class="refresh-button">
+                            ↻ Refresh
+                        </button>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Food item</th>
+                                    <th>Category</th>
+                                    <th>Price</th>
+                                    <th>Status</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="menuTableBody">
+                                <tr>
+                                    <td colspan="6" class="empty-state">
+                                        Loading menu items...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p class="table-note">
+                        Records are retrieved directly from Oracle Database.
+                    </p>
+                </article>
+
+            </section>
+
+            <!-- ASSIGNED ORDER MANAGEMENT -->
+            <section class="orders-section">
+
+                <section class="welcome orders-welcome">
+                    <div>
+                        <span class="eyebrow">ORDER MANAGEMENT</span>
+                        <h1>My Assigned Orders</h1>
+                        <p>
+                            Manage assigned food items, update preparation
+                            status, and handle authorized payments.
+                        </p>
+                    </div>
+
+                    <div class="dashboard-icon">📦</div>
+                </section>
+
+                <!-- ORDER STATISTICS -->
+                <section class="stats order-stats">
+
+                    <article class="stat-card">
+                        <span>Assigned Orders</span>
+                        <strong id="totalOrders">0</strong>
+                        <small>Orders assigned to you</small>
+                    </article>
+
+                    <article class="stat-card">
+                        <span>Pending Orders</span>
+                        <strong id="pendingOrders">0</strong>
+                        <small>Awaiting preparation</small>
+                    </article>
+
+                    <article class="stat-card">
+                        <span>Ready Orders</span>
+                        <strong id="readyOrders">0</strong>
+                        <small>Ready for collection</small>
+                    </article>
+
+                    <article class="stat-card">
+                        <span>Total Revenue</span>
+                        <strong id="totalRevenue">₹0.00</strong>
+                        <small>Net revenue from paid orders</small>
+                    </article>
+
+                </section>
+
+                <!-- ASSIGNED ORDER ITEMS TABLE -->
+                <section class="panel table-panel orders-panel">
+
+                    <div class="panel-heading">
+                        <div>
+                            <span class="eyebrow">ASSIGNED ITEMS</span>
+                            <h2>Manage My Order Items</h2>
+                        </div>
+
+                        <button
+                            type="button"
+                            id="refreshOrdersButton"
+                            class="refresh-button">
+                            ↻ Refresh Orders
+                        </button>
+                    </div>
+
+                    <p
+                        id="ordersMessage"
+                        class="form-message"
+                        role="status"
+                        aria-live="polite">
+                    </p>
+
+                    <!-- ORDER SEARCH AND FILTERS -->
+                    <div class="order-filters"
+                        aria-label="Search and filter assigned orders">
+                        <div class="form-group order-search-group">
+                            <label for="orderSearchInput">Search orders</label>
+                            <input
+                                type="search"
+                                id="orderSearchInput"
+                                placeholder="Order ID, token, customer, phone, food item..."
+                                autocomplete="off">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="orderStatusFilter">Item status</label>
+                            <select id="orderStatusFilter">
+                                <option value="ALL">All statuses</option>
+                                <option value="PENDING">Pending</option>
+                                <option value="PREPARING">Preparing</option>
+                                <option value="READY">Ready</option>
+                                <option value="COMPLETED">Completed</option>
+                                <option value="CANCELLED">Cancelled</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="orderPaymentFilter">Payment
+                                status</label>
+                            <select id="orderPaymentFilter">
+                                <option value="ALL">All payments</option>
+                                <option value="PENDING">Pending</option>
+                                <option value="PAID">Paid</option>
+                                <option value="REFUNDED">Refunded</option>
+                            </select>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="orderDateFilter">Order date</label>
+                            <input type="date" id="orderDateFilter">
+                        </div>
+
+                        <button type="button" id="clearOrderFiltersButton"
+                            class="refresh-button">
+                            Clear filters
+                        </button>
+                        <p id="orderFilterCount" class="table-note"
+                            aria-live="polite">Showing all assigned items</p>
+                    </div>
+
+                    <div class="table-wrapper">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Order ID</th>
+                                    <th>Token</th>
+                                    <th>Customer</th>
+                                    <th>Phone</th>
+                                    <th>Date</th>
+                                    <th>Food Item</th>
+                                    <th>Quantity × Price</th>
+                                    <th>Payment</th>
+                                    <th>Item Status / Action</th>
+                                </tr>
+                            </thead>
+
+                            <tbody id="ordersTableBody">
+                                <tr>
+                                    <td colspan="9" class="empty-state">
+                                        Loading assigned order items...
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <p class="table-note">
+                        Only food items assigned to your administrator account
+                        are displayed. Payment actions are available only to
+                        the designated payment administrator.
+                    </p>
+
+                </section>
+
+            </section>
+
+            <!-- REFUND HISTORY -->
+            <section class="refund-history-section panel table-panel">
+
+                <div class="panel-heading">
+                    <div>
+                        <span class="eyebrow">PAYMENT MANAGEMENT</span>
+                        <h2>Refund History</h2>
+                        <p>Review refunds for orders you are authorized to
+                            manage.</p>
+                    </div>
+                </div>
+
+                <div class="table-wrapper">
+                    <table class="refund-history-table">
+                        <thead>
+                            <tr>
+                                <th>Refund ID</th>
+                                <th>Order ID</th>
+                                <th>Payment ID</th>
+                                <th>Refund Amount</th>
+                                <th>Refund Date</th>
+                                <th>Note</th>
+                            </tr>
+                        </thead>
+
+                        <tbody id="refundHistoryBody">
+                            <tr>
+                                <td colspan="6" class="empty-state">
+                                    Loading refund history...
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+            </section>
+
+        </main>
+
+        <footer>
+            CampusBite Admin · Smart Canteen Management System
+        </footer>
+
+    </body>
+</html>

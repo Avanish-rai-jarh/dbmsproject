@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Track Your Order | CampusBite</title>
+
+    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="css/track-order.css">
+
+    <script src="js/track-order.js" defer></script>
+</head>
+
+<body>
+    <header class="tracking-header">
+        <a href="index.html" class="tracking-brand">
+            <span class="brand-icon">C</span>
+            <span>CampusBite</span>
+        </a>
+
+        <a href="menu.html" class="back-link">← Back to menu</a>
+    </header>
+
+    <main class="tracking-container">
+
+        <section class="tracking-heading">
+            <p class="eyebrow">YOUR CAMPUS ORDER</p>
+            <h1>Track your order</h1>
+            <p>Enter your order details to check its current status.</p>
+        </section>
+
+        <section class="tracking-card">
+            <h2>Find Your Order</h2>
+
+            <form id="trackingForm">
+                <div class="form-group">
+                    <label for="orderId">Order ID</label>
+                    <input
+                        type="number"
+                        id="orderId"
+                        name="order_id"
+                        min="1"
+                        step="1"
+                        placeholder="Enter your Order ID"
+                        required
+                    >
+                </div>
+
+                <div class="form-group">
+                    <label for="tokenNo">Token Number</label>
+                    <input
+                        type="number"
+                        id="tokenNo"
+                        name="token_no"
+                        min="1"
+                        step="1"
+                        placeholder="Enter your Token Number"
+                        required
+                    >
+                </div>
+
+                <button type="submit" id="trackButton">
+                    Track Order →
+                </button>
+            </form>
+
+            <div
+                id="trackingMessage"
+                class="tracking-message"
+                role="alert"
+                aria-live="polite"
+                hidden
+            ></div>
+        </section>
+
+        <section id="orderResult" class="tracking-card result-card" hidden>
+            <div class="result-heading">
+                <div>
+                    <p class="eyebrow">ORDER DETAILS</p>
+                    <h2>Order #<span id="resultOrderId"></span></h2>
+                </div>
+
+                <span id="resultStatus" class="status-badge"></span>
+            </div>
+
+            <div class="token-display">
+                <span>Your Token Number</span>
+                <strong id="resultToken"></strong>
+            </div>
+
+            <div class="order-meta">
+                <div>
+                    <span>Customer</span>
+                    <strong id="resultCustomer"></strong>
+                </div>
+
+                <div>
+                    <span>Order Time</span>
+                    <strong id="resultTime"></strong>
+                </div>
+
+                <div>
+                    <span>Payment Method</span>
+                    <strong id="resultPaymentMethod"></strong>
+                </div>
+
+                <div>
+                    <span>Payment Status</span>
+                    <strong id="resultPaymentStatus"></strong>
+                </div>
+            </div>
+
+            <div class="tracking-divider"></div>
+
+            <h3>Items Ordered</h3>
+
+            <div id="resultItems" class="result-items"></div>
+
+            <div class="result-total">
+                <span>Total Amount</span>
+                <strong id="resultTotal"></strong>
+            </div>
+
+            <p class="status-help">
+                Order status reflects the latest status saved by the canteen.
+            </p>
+        </section>
+
+        <div class="tracking-footer-link">
+            <a href="index.html">← Return to Home</a>
+        </div>
+
+    </main>
+
+    <footer class="tracking-page-footer">
+        <span>CampusBite © 2026</span>
+        <span>Powered by Oracle Database</span>
+    </footer>
+</body>
+</html>
