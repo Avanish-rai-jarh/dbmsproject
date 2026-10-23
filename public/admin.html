@@ -14,18 +14,25 @@
 
         <!-- HEADER -->
         <header class="topbar">
-            <a href="/" class="brand">
+            <a href="/admin.html" class="brand"
+                aria-label="CampusBite Admin Dashboard">
                 <span class="brand-icon">C</span>
                 CampusBite
                 <span class="admin-label">ADMIN</span>
             </a>
 
-            <button
-                type="button"
-                id="adminLogoutButton"
-                class="admin-logout-button">
-                Logout
-            </button>
+            <nav class="admin-nav" aria-label="Admin navigation">
+                <a href="cfo-report.html" class="cfo-track-nav">
+                    Revenue
+                </a>
+
+                <button
+                    type="button"
+                    id="adminLogoutButton"
+                    class="admin-logout-button">
+                    Logout
+                </button>
+            </nav>
         </header>
 
         <main class="dashboard">
@@ -37,8 +44,13 @@
 
                     <h2 id="adminGreeting">Welcome back, Admin 👋</h2>
 
+                    <p id="adminCanteenName" class="admin-canteen-name">
+                        Loading your canteen...
+                    </p>
+
                     <h1>Menu Management</h1>
                     <p>Add food items and manage your canteen menu.</p>
+
                 </div>
 
                 <div class="dashboard-icon">🍽️</div>

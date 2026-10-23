@@ -1,67 +1,85 @@
+
 <!DOCTYPE html>
 <html lang="en">
     <head>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
         <title>CampusBite | Smart Canteen</title>
-
         <link rel="stylesheet" href="css/style.css">
         <script src="js/menu.js" defer></script>
     </head>
-
     <body>
-
         <header class="navbar">
-            <a href="/" class="logo">
-                <span class="logo-icon">C</span>
+            <a href="index.html" class="brand" aria-label="CampusBite home">
+                <span class="brand-icon">C</span>
                 CampusBite
             </a>
 
-            <nav>
-                <a href="#home">Home</a>
-                <a href="customer-login.html" id="customerLoginLink">
-                    Customer Login
+            <div class="nav-actions">
+                <button
+                    type="button"
+                    id="customerLogoutButton"
+                    class="customer-logout-button"
+                    hidden>
+                    Logout
+                </button>
+                <a href="cart.html" class="cart-button"
+                    aria-label="Open shopping cart">
+                    🛒 Cart <span id="cartCount">0</span>
                 </a>
+            </div>
 
-                <a href="customer-register.html" id="customerRegisterLink">
-                    Sign Up
-                </a>
-                <a href="customer-profile.html" id="customerProfileLink" hidden>
-                    My Profile
-                </a>
-                <a href="#menu" id="menuLink" hidden>Our Menu</a>
-                <a href="my-orders.html" id="myOrdersLink">My Orders</a>
+            <button
+                type="button"
+                class="mobile-menu-toggle"
+                id="mobileMenuToggle"
+                aria-label="Open navigation menu"
+                aria-controls="mainNavLinks"
+                aria-expanded="false">
+                <span></span>
+                <span></span>
+                <span></span>
+            </button>
+
+            <nav class="nav-links" id="mainNavLinks"
+                aria-label="Main navigation">
+                <a href="#home">Home</a>
+                <a href="#menu" id="menuLink">Menu</a>
+                <a href="customer-register.html" id="customerRegisterLink">Sign
+                    Up</a>
+                <a href="customer-login.html" id="customerLoginLink">Customer
+                    Login</a>
+                <a href="my-orders.html" id="myOrdersLink" hidden>My Orders</a>
                 <a href="track-order.html" id="trackOrderLink" hidden>Track
                     Order</a>
-                <a href="/admin-login.html" id="adminLoginLink">Admin Login</a>
-                <a href="#about" id="aboutLink" hidden>About</a>
-            </nav>
+                <a href="customer-profile.html" id="customerProfileLink"
+                    hidden>My Profile</a>
+                <a href="admin-login.html" id="adminLoginLink">Admin Login</a>
+                <a href="admin.html" id="adminDashboardLink" hidden>Admin
+                    Dashboard</a>
 
-            <button class="cart-button" id="cartButton">
-                🛒 Cart <span id="cartCount">0</span>
-            </button>
-            <button type="button" id="customerLogoutButton" hidden>
+                <!-- <button
+                type="button"
+                id="customerLogoutButton"
+                class="customer-logout-button"
+                hidden>
                 Logout
-            </button>
+            </button> -->
+
+                <a href="#about" id="aboutLink">About</a>
+            </nav>
         </header>
 
         <main>
-
             <section class="hero" id="home">
                 <div class="hero-content">
                     <span class="eyebrow">YOUR CAMPUS, YOUR CANTEEN</span>
-
                     <h1>Good food.<br>Zero waiting.</h1>
-
                     <p>
                         Your favourite campus meals, organized in one place.
                         Browse the menu and get ready for a smarter lunch break.
                     </p>
-
-                    <a href="#menu" class="primary-button">
-                        Explore Menu →
-                    </a>
+                    <a href="#menu" class="primary-button">Explore Menu →</a>
                 </div>
 
                 <div class="hero-art" aria-hidden="true">
@@ -69,7 +87,6 @@
                     <div class="hero-food">🍔</div>
                     <span class="floating-food food-one">🍟</span>
                     <span class="floating-food food-two">🥤</span>
-
                     <div class="hero-label">
                         <span class="status-dot"></span>
                         Freshly prepared
@@ -78,14 +95,12 @@
             </section>
 
             <section class="menu-section" id="menu">
-
                 <div class="section-heading">
                     <div>
                         <span class="eyebrow">MADE FOR YOUR BREAK</span>
                         <h2>Today's Menu</h2>
                         <p>Discover something delicious.</p>
                     </div>
-
                     <span class="menu-badge">LIVE MENU</span>
                 </div>
 
@@ -93,23 +108,38 @@
                     Loading menu from Oracle Database...
                 </div>
 
-                <div id="menuMessage"></div>
-
-                <!-- Menu Search Bar -->
                 <div class="menu-search-container">
                     <input
                         type="search"
                         id="menuSearch"
                         class="menu-search-input"
-                        placeholder="Search food or category..."
+                        placeholder="Search food, category or canteen..."
                         autocomplete="off"
-                        aria-label="Search menu by food name or category">
+                        aria-label="Search menu by food name, category or canteen">
+
+                    <button
+                        type="button"
+                        id="menuSearchButton"
+                        class="menu-search-button"
+                        aria-label="Search menu"
+                        title="Search">
+                        <svg
+                            viewBox="0 0 24 24"
+                            width="21"
+                            height="21"
+                            fill="none"
+                            stroke="currentColor"
+                            stroke-width="2"
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            aria-hidden="true">
+                            <circle cx="11" cy="11" r="7"></circle>
+                            <path d="m20 20-4-4"></path>
+                        </svg>
+                    </button>
                 </div>
 
                 <div id="menuGrid" class="menu-grid"></div>
-
-                <div id="menuGrid" class="menu-grid"></div>
-
             </section>
 
             <section class="about-section" id="about">
@@ -117,19 +147,19 @@
                     <span class="eyebrow">BUILT FOR CAMPUS LIFE</span>
                     <h2>A smarter way to order.</h2>
                 </div>
-
                 <p>
                     CampusBite organizes menu items, orders, tokens and bills
                     using a relational database powered by Oracle.
                 </p>
             </section>
-
         </main>
 
         <footer>
             <span>CampusBite © 2026</span>
             <span>Powered by Oracle Database</span>
         </footer>
+
         <script src="js/customer-navigation.js"></script>
+        <script src="js/mobile-navigation.js" defer></script>
     </body>
 </html>

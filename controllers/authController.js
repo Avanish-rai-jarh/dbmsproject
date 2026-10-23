@@ -1,3 +1,4 @@
+const oracledb = require("oracledb");
 const bcrypt = require("bcrypt");
 const { getConnection } = require("../config/db");
 
@@ -375,13 +376,59 @@ function customerLogout(req, res, next) {
 }
 
 //get current customer session
-function getCurrentUser(req, res) {
+
+async function getCurrentUser(req, res, next) {
     if (req.session?.admin) {
-        return res.json({
-            success: true,
-            userType: "admin",
-            user: req.session.admin
-        });
+        let connection;
+
+        try {
+            connection = await getConnection();
+
+            const result = await connection.execute(
+                `SELECT
+                    admin_id,
+                    admin_name,
+                    username,
+                    canteen_name
+                 FROM admins
+                 WHERE admin_id = :adminId`,
+                { adminId: req.session.admin.adminId },
+                { outFormat: oracledb.OUT_FORMAT_OBJECT }
+            );
+
+            if (result.rows.length === 0) {
+                return res.status(401).json({
+                    success: false,
+                    message: "Admin account not found."
+                });
+            }
+
+            const admin = result.rows[0];
+
+            return res.json({
+                success: true,
+                userType: "admin",
+                user: {
+                    adminId: admin.ADMIN_ID,
+                    adminName: admin.ADMIN_NAME,
+                    username: admin.USERNAME,
+                    canteenName: admin.CANTEEN_NAME
+                }
+            });
+        } catch (error) {
+            return next(error);
+        } finally {
+            if (connection) {
+                try {
+                    await connection.close();
+                } catch (error) {
+                    console.error(
+                        "Connection close error:",
+                        error.message
+                    );
+                }
+            }
+        }
     }
 
     if (req.session?.customer) {
@@ -398,6 +445,7 @@ function getCurrentUser(req, res) {
         user: null
     });
 }
+
 
 
 async function updateCustomerProfile(req, res, next) {

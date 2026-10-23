@@ -1372,7 +1372,45 @@ async function loadMenuItems() {
                 toggleAvailability(item, availabilityButton);
             });
 
-            actionsCell.append(editButton, availabilityButton);
+
+
+            const deleteButton = document.createElement("button");
+            deleteButton.type = "button";
+            deleteButton.className = "action-button delete-button";
+            deleteButton.textContent = "Delete";
+
+            deleteButton.addEventListener("click", async () => {
+                if (!confirm(
+                    `Delete "${item.ITEM_NAME}" permanently?\n\n` +
+                    "This action cannot be undone."
+                )) {
+                    return;
+                }
+
+                deleteButton.disabled = true;
+                deleteButton.textContent = "Deleting...";
+
+                try {
+                    const result = await fetchJSON(
+                        `/api/admin/items/${item.ITEM_ID}`,
+                        { method: "DELETE" }
+                    );
+
+                    showMessage(
+                        result.message || "Menu item deleted successfully.",
+                        "success"
+                    );
+
+                    await loadMenuItems();
+                } catch (error) {
+                    alert(error.message);
+                    deleteButton.disabled = false;
+                    deleteButton.textContent = "Delete";
+                }
+            });
+
+
+            actionsCell.append(editButton, availabilityButton,deleteButton);
             row.appendChild(actionsCell);
             menuTableBody.appendChild(row);
         });
@@ -1748,8 +1786,8 @@ async function loadOrders() {
                 item.PHONE,
                 item.ITEM_NAME
             ].filter(value => value !== null && value !== undefined)
-             .join(" ")
-             .toLowerCase();
+                .join(" ")
+                .toLowerCase();
 
             row.dataset.itemStatus = itemStatus;
             row.dataset.paymentStatus = paymentStatus;
@@ -2230,8 +2268,10 @@ initializeDashboard();
 
 
 
+
 async function loadAdminGreeting() {
     const greeting = document.getElementById("adminGreeting");
+    const canteenElement = document.getElementById("adminCanteenName");
 
     if (!greeting) return;
 
@@ -2242,9 +2282,18 @@ async function loadAdminGreeting() {
 
         const data = await response.json();
 
-        if (!response.ok || !data.success ||
-            data.userType !== "admin" || !data.user) {
+        if (
+            !response.ok ||
+            !data.success ||
+            data.userType !== "admin" ||
+            !data.user
+        ) {
             greeting.textContent = "Welcome back, Admin 👋";
+
+            if (canteenElement) {
+                canteenElement.textContent = "Canteen name unavailable";
+            }
+
             return;
         }
 
@@ -2258,6 +2307,12 @@ async function loadAdminGreeting() {
             admin.USERNAME ||
             "Admin";
 
+        const canteenName =
+            admin.canteenName ||
+            admin.CANTEEN_NAME ||
+            admin.canteen_name ||
+            "";
+
         const hour = new Date().getHours();
 
         const timeGreeting = hour < 12
@@ -2268,11 +2323,22 @@ async function loadAdminGreeting() {
 
         greeting.textContent = `${timeGreeting}, ${name} 👋`;
 
+        if (canteenElement) {
+            canteenElement.textContent = canteenName
+                ? `Your canteen: ${canteenName}`
+                : "Canteen name not set";
+        }
+
     } catch (error) {
         console.error("Admin greeting error:", error);
         greeting.textContent = "Welcome back, Admin 👋";
+
+        if (canteenElement) {
+            canteenElement.textContent = "Unable to load canteen name";
+        }
     }
 }
+
 
 loadAdminGreeting();
 

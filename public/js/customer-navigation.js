@@ -1,8 +1,10 @@
+
 const navigationIds = [
     "customerLoginLink",
     "customerRegisterLink",
     "adminLoginLink",
     "menuLink",
+    "myOrdersLink",
     "trackOrderLink",
     "customerProfileLink",
     "adminDashboardLink",
@@ -45,16 +47,12 @@ async function updateCustomerNavigation() {
             nav.adminLoginLink.hidden = isLoggedIn;
         }
 
-        if (nav.menuLink) {
-            nav.menuLink.hidden = !isLoggedIn;
-        }
-
         if (nav.trackOrderLink) {
-            nav.trackOrderLink.hidden = !isLoggedIn;
+            nav.trackOrderLink.hidden = !isCustomer;
         }
 
         if (nav.aboutLink) {
-            nav.aboutLink.hidden = !isLoggedIn;
+            nav.aboutLink.hidden = !isCustomer;
         }
 
         if (nav.customerProfileLink) {
@@ -66,7 +64,10 @@ async function updateCustomerNavigation() {
         }
 
         if (nav.customerLogoutButton) {
-            nav.customerLogoutButton.hidden = !isLoggedIn;
+            nav.customerLogoutButton.hidden = !isCustomer;
+        }
+        if (nav.myOrdersLink) {
+            nav.myOrdersLink.hidden = !isCustomer;
         }
 
     } catch (error) {
@@ -74,48 +75,42 @@ async function updateCustomerNavigation() {
     }
 }
 
-nav.customerLogoutButton.addEventListener("click", async () => {
-    try {
-        const csrfResponse = await fetch("/api/csrf-token", {
-            credentials: "same-origin"
-        });
+if (nav.customerLogoutButton) {
+    nav.customerLogoutButton.addEventListener("click", async () => {
+        nav.customerLogoutButton.disabled = true;
 
-        const csrfData = await csrfResponse.json();
+        try {
+            const csrfResponse = await fetch("/api/csrf-token", {
+                credentials: "same-origin"
+            });
 
-        if (!csrfResponse.ok || !csrfData.csrfToken) {
-            throw new Error("Unable to initialize secure logout.");
-        }
+            const csrfData = await csrfResponse.json();
 
-        const sessionResponse = await fetch("/api/auth/current-user", {
-            credentials: "same-origin",
-            cache: "no-store"
-        });
-
-        const sessionData = await sessionResponse.json();
-
-        const logoutUrl = sessionData.userType === "admin"
-            ? "/api/auth/logout"
-            : "/api/auth/customer/logout";
-
-        const response = await fetch(logoutUrl, {
-            method: "POST",
-            credentials: "same-origin",
-            headers: {
-                "X-CSRF-Token": csrfData.csrfToken
+            if (!csrfResponse.ok || !csrfData.csrfToken) {
+                throw new Error("Unable to initialize secure logout.");
             }
-        });
 
-        const result = await response.json();
+            const response = await fetch("/api/auth/customer/logout", {
+                method: "POST",
+                credentials: "same-origin",
+                headers: {
+                    "X-CSRF-Token": csrfData.csrfToken
+                }
+            });
 
-        if (!response.ok) {
-            throw new Error(result.message || "Logout failed.");
+            const result = await response.json();
+
+            if (!response.ok || !result.success) {
+                throw new Error(result.message || "Logout failed.");
+            }
+
+            window.location.replace("/index.html");
+
+        } catch (error) {
+            alert(error.message);
+            nav.customerLogoutButton.disabled = false;
         }
-
-        window.location.href = "/index.html";
-
-    } catch (error) {
-        alert(error.message);
-    }
-});
+    });
+}
 
 updateCustomerNavigation();

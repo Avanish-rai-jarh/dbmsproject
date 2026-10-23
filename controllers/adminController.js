@@ -29,7 +29,7 @@ async function getAllMenuItems(req, res, next) {
              FROM menu_items m
              JOIN categories c
                 ON m.category_id = c.category_id
-             WHERE m.created_by_admin_id = :adminId
+             WHERE m.created_by_admin_id = :adminId AND m.is_deleted = 'N'
              ORDER BY m.item_id DESC`,
             { adminId },
             { outFormat: oracledb.OUT_FORMAT_OBJECT }
@@ -675,7 +675,8 @@ async function markPaymentPaid(req, res, next) {
         // Update only pending cash payments.
         const result = await connection.execute(
             `UPDATE payments
-             SET payment_status = 'PAID'
+             SET payment_status = 'PAID' ,
+             PAID_AT = SYSTIMESTAMP
              WHERE order_id = :order_id
                AND payment_status = 'PENDING'
                AND payment_method = 'CASH'`,
@@ -1551,6 +1552,345 @@ async function updateMenuItemAssignments(req, res, next) {
     }
 }
 
+
+//delete menuItem
+
+
+
+async function deleteMenuItem(req, res, next) {
+    let connection;
+
+    try {
+        const adminId = Number(req.session?.admin?.adminId);
+        const itemId = Number(req.params.id);
+
+        if (!Number.isSafeInteger(adminId) || adminId <= 0) {
+            return res.status(401).json({
+                success: false,
+                message: "Admin authentication required."
+            });
+        }
+
+        if (!Number.isSafeInteger(itemId) || itemId <= 0) {
+            return res.status(400).json({
+                success: false,
+                message: "Invalid menu item ID."
+            });
+        }
+
+        connection = await getConnection();
+
+        // Confirm that the logged-in admin owns this item.
+        const itemResult = await connection.execute(
+            `SELECT item_id
+             FROM menu_items
+             WHERE item_id = :itemId
+               AND created_by_admin_id = :adminId
+               AND is_deleted = 'N'
+             FOR UPDATE`,
+            { itemId, adminId },
+            { outFormat: oracledb.OUT_FORMAT_OBJECT }
+        );
+
+        if (itemResult.rows.length === 0) {
+            await connection.rollback();
+
+            return res.status(404).json({
+                success: false,
+                message: "Menu item not found or you do not own it."
+            });
+        }
+
+        // Block removal if any order containing this item is still active.
+        const activeOrders = await connection.execute(
+            `SELECT 1
+             FROM order_items oi
+             JOIN canteen_orders o
+               ON o.order_id = oi.order_id
+             WHERE oi.item_id = :itemId
+               AND oi.item_status NOT IN ('COMPLETED', 'CANCELLED')
+               AND o.order_status <> 'CANCELLED'
+               AND ROWNUM = 1`,
+            { itemId }
+        );
+
+        if (activeOrders.rows.length > 0) {
+            await connection.rollback();
+
+            return res.status(409).json({
+                success: false,
+                message:
+                    "This item has active orders. Complete or cancel them before removing it."
+            });
+        }
+
+        // Soft-delete: preserve all historical order records.
+        await connection.execute(
+            `UPDATE menu_items
+             SET is_deleted = 'Y',
+                 is_available = 'N'
+             WHERE item_id = :itemId
+               AND created_by_admin_id = :adminId`,
+            { itemId, adminId }
+        );
+
+        await connection.commit();
+
+        return res.json({
+            success: true,
+            message: "Menu item removed from the active menu."
+        });
+    } catch (error) {
+        if (connection) {
+            try {
+                await connection.rollback();
+            } catch (rollbackError) {
+                console.error("Menu item removal rollback error:", rollbackError);
+            }
+        }
+
+        return next(error);
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();
+            } catch (error) {
+                console.error("Connection close error:", error);
+            }
+        }
+    }
+}
+
+
+// ==========================================
+// CFO FINANCIAL REPORT
+// ==========================================
+
+
+async function getRevenueAnalytics(req, res, next) {
+    let connection;
+
+    try {
+        const adminId = Number(req.session?.admin?.adminId);
+
+        if (!Number.isSafeInteger(adminId) || adminId <= 0) {
+            return res.status(401).json({
+                success: false,
+                message: "Admin authentication required."
+            });
+        }
+
+        const allowedPeriods = ["daily", "monthly", "yearly"];
+        const period = String(req.query.period || "monthly").toLowerCase();
+
+        if (!allowedPeriods.includes(period)) {
+            return res.status(400).json({
+                success: false,
+                message: "Period must be daily, monthly, or yearly."
+            });
+        }
+
+        const now = new Date();
+
+        let startDate;
+        let endDate;
+        let truncFormat;
+        let labelFormat;
+        let rangeLabel;
+
+        if (period === "daily") {
+            startDate = new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                now.getDate() - 13
+            );
+
+            endDate = new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                now.getDate() + 1
+            );
+
+            truncFormat = "DD";
+            labelFormat = "DD Mon";
+            rangeLabel = "Last 14 days";
+        } else if (period === "monthly") {
+            startDate = new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                1
+            );
+
+            endDate = new Date(
+                now.getFullYear(),
+                now.getMonth(),
+                now.getDate() + 1
+            );
+
+            truncFormat = "DD";
+            labelFormat = "DD Mon";
+
+            rangeLabel =
+                now.toLocaleString("en-IN", {
+                    month: "long",
+                    year: "numeric"
+                }) + " · Month to date";
+        } else {
+            startDate = new Date(now.getFullYear(), 0, 1);
+            endDate = new Date(now.getFullYear() + 1, 0, 1);
+
+            truncFormat = "MM";
+            labelFormat = "Mon";
+            rangeLabel = now.getFullYear() + " · Year to date";
+        }
+
+        connection = await getConnection();
+
+        // Use cumulative REFUND_AMOUNT once. Do not subtract
+        // REFUND_HISTORY again.
+        const summaryResult = await connection.execute(
+            `
+            SELECT
+                NVL(SUM(p.amount), 0) AS GROSS_PAID,
+
+                NVL(
+                    SUM(
+                        LEAST(
+                            p.amount,
+                            NVL(p.refund_amount, 0)
+                        )
+                    ),
+                    0
+                ) AS TOTAL_REFUNDS,
+
+                NVL(
+                    SUM(
+                        GREATEST(
+                            p.amount - NVL(p.refund_amount, 0),
+                            0
+                        )
+                    ),
+                    0
+                ) AS NET_REVENUE
+
+            FROM payments p
+            JOIN canteen_orders o
+                ON o.order_id = p.order_id
+
+            WHERE o.assigned_admin_id = :adminId
+              AND UPPER(p.payment_status) IN ('PAID', 'REFUNDED')
+              AND NVL(p.paid_at, o.order_time) >= :startDate
+              AND NVL(p.paid_at, o.order_time) < :endDate
+            `,
+            {
+                adminId,
+                startDate,
+                endDate
+            },
+            {
+                outFormat: oracledb.OUT_FORMAT_OBJECT
+            }
+        );
+
+        // Trend data: use PAID_AT when available; otherwise use
+        // ORDER_TIME for legacy payments.
+        const trendResult = await connection.execute(
+            `
+            SELECT
+                TO_CHAR(
+                    TRUNC(
+                        NVL(p.paid_at, o.order_time),
+                        '${truncFormat}'
+                    ),
+                    'YYYY-MM-DD'
+                ) AS PERIOD_KEY,
+
+                TO_CHAR(
+                    TRUNC(
+                        NVL(p.paid_at, o.order_time),
+                        '${truncFormat}'
+                    ),
+                    '${labelFormat}'
+                ) AS LABEL,
+
+                NVL(
+                    SUM(
+                        GREATEST(
+                            p.amount - NVL(p.refund_amount, 0),
+                            0
+                        )
+                    ),
+                    0
+                ) AS NET_REVENUE
+
+            FROM payments p
+            JOIN canteen_orders o
+                ON o.order_id = p.order_id
+
+            WHERE o.assigned_admin_id = :adminId
+              AND UPPER(p.payment_status) IN ('PAID', 'REFUNDED')
+              AND NVL(p.paid_at, o.order_time) >= :startDate
+              AND NVL(p.paid_at, o.order_time) < :endDate
+
+            GROUP BY
+                TRUNC(
+                    NVL(p.paid_at, o.order_time),
+                    '${truncFormat}'
+                )
+
+            ORDER BY
+                TRUNC(
+                    NVL(p.paid_at, o.order_time),
+                    '${truncFormat}'
+                )
+            `,
+            {
+                adminId,
+                startDate,
+                endDate
+            },
+            {
+                outFormat: oracledb.OUT_FORMAT_OBJECT
+            }
+        );
+
+        const totals = summaryResult.rows[0] || {};
+
+        return res.json({
+            success: true,
+            period,
+            rangeLabel,
+
+            summary: {
+                grossPaid: Number(totals.GROSS_PAID || 0),
+                totalRefunds: Number(totals.TOTAL_REFUNDS || 0),
+                netRevenue: Number(totals.NET_REVENUE || 0)
+            },
+
+            trend: trendResult.rows.map(row => ({
+                LABEL: row.LABEL,
+                PERIOD_KEY: row.PERIOD_KEY,
+                NET_REVENUE: Number(row.NET_REVENUE || 0)
+            }))
+        });
+    } catch (error) {
+        return next(error);
+    } finally {
+        if (connection) {
+            try {
+                await connection.close();
+            } catch (error) {
+                console.error(
+                    "CFO analytics connection close error:",
+                    error
+                );
+            }
+        }
+    }
+}
+
+
+
 module.exports = {
     getAllMenuItems,
     addMenuItem,
@@ -1568,6 +1908,7 @@ module.exports = {
     getAssignedItems,
     updateAssignedItemStatus,
     getMenuItemAssignments,
-    updateMenuItemAssignments
-
+    updateMenuItemAssignments,
+    deleteMenuItem,
+    getRevenueAnalytics
 };

@@ -1,4 +1,6 @@
+
 const { getConnection } = require("../config/db");
+const oracledb = require("oracledb");
 
 async function getMenu(req, res, next) {
     let connection;
@@ -13,22 +15,26 @@ async function getMenu(req, res, next) {
                 c.category_name,
                 m.price,
                 m.is_available,
-                m.image_url
+                m.image_url,
+                a.canteen_name
              FROM menu_items m
              JOIN categories c
-                ON m.category_id = c.category_id
-             ORDER BY c.category_name, m.item_name`,
+               ON c.category_id = m.category_id
+             LEFT JOIN admins a
+               ON a.admin_id = m.created_by_admin_id
+             WHERE m.is_deleted = 'N'
+             ORDER BY a.canteen_name, c.category_name, m.item_name`,
             [],
-            { outFormat: require("oracledb").OUT_FORMAT_OBJECT }
+            { outFormat: oracledb.OUT_FORMAT_OBJECT }
         );
 
-        res.json({
+        return res.json({
             success: true,
             count: result.rows.length,
             items: result.rows
         });
     } catch (error) {
-        next(error);
+        return next(error);
     } finally {
         if (connection) {
             try {

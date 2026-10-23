@@ -113,9 +113,17 @@ router.post("/items", async (req, res, next) => {
         const customerId = req.session.customer.customerId;
 
         const itemResult = await connection.execute(
-            `SELECT item_id, item_name, price, is_available
-             FROM menu_items
-             WHERE item_id = :itemId`,
+            `SELECT
+        m.item_id,
+        m.item_name,
+        m.price,
+        m.is_available,
+        m.is_deleted,
+        a.canteen_name
+     FROM menu_items m
+     LEFT JOIN admins a
+       ON a.admin_id = m.created_by_admin_id
+     WHERE m.item_id = :itemId`,
             { itemId },
             { outFormat: oracledb.OUT_FORMAT_OBJECT }
         );
@@ -129,12 +137,50 @@ router.post("/items", async (req, res, next) => {
 
         const dbItem = itemResult.rows[0];
 
-        if (dbItem.IS_AVAILABLE !== "Y") {
+
+        if (
+            dbItem.IS_DELETED === "Y" ||
+            dbItem.IS_AVAILABLE !== "Y"
+        ) {
             return res.status(409).json({
                 success: false,
                 message: "This item is currently unavailable."
             });
         }
+
+        if (!dbItem.CANTEEN_NAME || !dbItem.CANTEEN_NAME.trim()) {
+            return res.status(409).json({
+                success: false,
+                message: "This item cannot be ordered until its admin sets a canteen name."
+            });
+        }
+
+        // Check the canteen of every item already in this customer's cart.
+        const cartCanteenResult = await connection.execute(
+            `SELECT DISTINCT UPPER(TRIM(a.canteen_name)) AS canteen_key
+     FROM customer_cart_items ci
+     JOIN menu_items m
+       ON m.item_id = ci.item_id
+     JOIN admins a
+       ON a.admin_id = m.created_by_admin_id
+     WHERE ci.customer_id = :customerId`,
+            { customerId },
+            { outFormat: oracledb.OUT_FORMAT_OBJECT }
+        );
+
+        const requestedCanteen = dbItem.CANTEEN_NAME.trim().toUpperCase();
+
+        const hasDifferentCanteen = cartCanteenResult.rows.some(
+            row => row.CANTEEN_KEY !== requestedCanteen
+        );
+
+        if (hasDifferentCanteen) {
+            return res.status(409).json({
+                success: false,
+                message: `Your cart contains food from another canteen. Remove those items before adding food from ${dbItem.CANTEEN_NAME}.`
+            });
+        }
+
 
         // Lock an existing cart row so concurrent updates cannot
         // silently overwrite its quantity.
@@ -202,10 +248,13 @@ router.post("/items", async (req, res, next) => {
                 mi.item_name,
                 mi.price,
                 mi.is_available,
-                ci.quantity
+                ci.quantity,
+                a.canteen_name
              FROM customer_cart_items ci
              JOIN menu_items mi
                ON mi.item_id = ci.item_id
+             LEFT JOIN admins a
+               ON a.admin_id = mi.created_by_admin_id
              WHERE ci.customer_id = :customerId
              ORDER BY mi.item_name`,
             { customerId },

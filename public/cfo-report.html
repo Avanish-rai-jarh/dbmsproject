@@ -1,0 +1,163 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>CampusBite | CFO Financial Report</title>
+
+        <link rel="stylesheet" href="css/admin.css">
+
+        <style>
+        .cfo-page {
+            width: min(1400px, 94%);
+            margin: 35px auto;
+        }
+
+        .cfo-page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 24px;
+        }
+
+        .cfo-page-header h1 {
+            margin: 0 0 8px;
+        }
+
+        .cfo-page-header p {
+            color: var(--muted, #777b73);
+            margin: 0;
+        }
+
+        .cfo-back-button {
+            display: inline-block;
+            padding: 11px 16px;
+            border: 1px solid var(--border, #e8e8df);
+            border-radius: 9px;
+            background: var(--surface, #fff);
+            color: var(--text, #20251f);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .cfo-back-button:hover {
+            border-color: var(--green, #2e6b45);
+        }
+    </style>
+    </head>
+
+    <body>
+        <header class="topbar">
+            <a href="/admin.html" class="brand"
+                aria-label="CampusBite Admin Dashboard">
+                <span class="brand-icon">C</span>
+                CampusBite
+                <span class="admin-label">ADMIN</span>
+            </a>
+
+            <nav class="admin-nav" aria-label="Admin navigation">
+                <a href="admin.html" class="cfo-back-button">
+                    ← Admin dashboard
+                </a>
+
+                <button
+                    type="button"
+                    id="adminLogoutButton"
+                    class="admin-logout-button">
+                    Logout
+                </button>
+            </nav>
+        </header>
+
+        <main class="cfo-page">
+            <section class="panel cfo-panel" id="cfoReport">
+                <div class="cfo-heading">
+                    <div>
+                        <span class="eyebrow">FINANCE & ANALYTICS</span>
+                        <h2>CFO Financial Report</h2>
+                        <p id="cfoDateRange">Loading report...</p>
+                    </div>
+
+                    <button
+                        type="button"
+                        id="cfoThemeToggle"
+                        class="cfo-theme-toggle"
+                        aria-pressed="false">
+                        ☾ Dark mode
+                    </button>
+                </div>
+
+                <div class="cfo-period-controls">
+                    <button type="button" class="cfo-period-button"
+                        data-period="daily" aria-pressed="false">Daily</button>
+
+                    <button type="button" class="cfo-period-button is-active"
+                        data-period="monthly"
+                        aria-pressed="true">Monthly</button>
+
+                    <button type="button" class="cfo-period-button"
+                        data-period="yearly"
+                        aria-pressed="false">Yearly</button>
+
+                    <button type="button" id="cfoRefreshButton"
+                        class="cfo-refresh-button">↻ Refresh</button>
+                </div>
+
+                <div class="cfo-summary-grid">
+                    <article class="cfo-metric cfo-net">
+                        <span>Net Revenue</span>
+                        <strong id="cfoNetRevenue">₹0.00</strong>
+                        <small>After refunds</small>
+                    </article>
+
+                    <article class="cfo-metric">
+                        <span>Gross Paid</span>
+                        <strong id="cfoGrossPaid">₹0.00</strong>
+                        <small>Before refunds</small>
+                    </article>
+
+                    <article class="cfo-metric">
+                        <span>Total Refunds</span>
+                        <strong id="cfoRefunds">₹0.00</strong>
+                        <small>Recorded refunds</small>
+                    </article>
+                </div>
+
+                <div class="cfo-chart-panel">
+                    <div class="cfo-chart-heading">
+                        <div>
+                            <h3>Revenue Trend</h3>
+                            <p>Net revenue for the selected period</p>
+                        </div>
+
+                        <span class="cfo-chart-legend">
+                            <i></i> Net revenue
+                        </span>
+                    </div>
+
+                    <div class="cfo-chart-wrap">
+                        <canvas id="cfoRevenueChart"
+                            role="img"
+                            aria-label="Net revenue trend chart"></canvas>
+
+                        <p id="cfoChartEmpty"
+                            class="cfo-chart-empty" hidden>
+                            No paid transactions found for this period.
+                        </p>
+                    </div>
+                </div>
+
+                <p id="cfoReportStatus" class="cfo-status"
+                    role="status" aria-live="polite">
+                    Loading financial report...
+                </p>
+            </section>
+        </main>
+
+        <script src="js/admin.js" defer></script>
+        <script src="js/cfo-analytics.js" defer></script>
+    </body>
+</html>

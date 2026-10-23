@@ -740,3 +740,334 @@ footer {
 .welcome-text h1 {
     margin-bottom: 10px;
 }
+
+.delete-button {
+    background-color: #dc2626;
+    color: #ffffff;
+    border: none;
+}
+
+.delete-button:hover {
+    background-color: #b91c1c;
+}
+
+.delete-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+
+
+.admin-canteen-name {
+    margin: 8px 0 14px;
+    color: #28734a;
+    font-size: 1rem;
+    font-weight: 600;
+    letter-spacing: 0.2px;
+}
+
+
+/* ==========================================
+   CFO FINANCIAL REPORT
+========================================== */
+
+.cfo-panel {
+    --cfo-surface: var(--surface, #ffffff);
+    --cfo-text: var(--text, #20251f);
+    --cfo-muted: var(--muted, #777b73);
+    --cfo-border: var(--border, #e8e8df);
+    --cfo-green: var(--green, #2e6b45);
+    --cfo-grid: #e6ebe3;
+
+    margin: 28px 0;
+    padding: clamp(18px, 3vw, 30px);
+    color: var(--cfo-text);
+    background: var(--cfo-surface);
+    border: 1px solid var(--cfo-border);
+    border-radius: 16px;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.cfo-heading,
+.cfo-chart-heading,
+.cfo-period-controls {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 14px;
+}
+
+.cfo-heading h2 {
+    margin: 7px 0 5px;
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(22px, 2.5vw, 30px);
+}
+
+.cfo-heading p,
+.cfo-chart-heading p {
+    color: var(--cfo-muted);
+    font-size: 13px;
+}
+
+.cfo-theme-toggle,
+.cfo-period-button,
+.cfo-refresh-button {
+    padding: 10px 13px;
+    border: 1px solid var(--cfo-border);
+    border-radius: 9px;
+    color: var(--cfo-text);
+    background: var(--cfo-surface);
+    font: inherit;
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.cfo-theme-toggle:hover,
+.cfo-period-button:hover,
+.cfo-refresh-button:hover {
+    border-color: var(--cfo-green);
+}
+
+.cfo-period-controls {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin: 24px 0 18px;
+}
+
+.cfo-refresh-button {
+    margin-left: auto;
+}
+
+.cfo-refresh-button:disabled {
+    opacity: 0.6;
+    cursor: wait;
+}
+
+.cfo-period-button.is-active {
+    color: #ffffff;
+    background: var(--cfo-green);
+    border-color: var(--cfo-green);
+}
+
+.cfo-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 15px;
+}
+
+.cfo-metric {
+    min-width: 0;
+    padding: 21px;
+    background: var(--cfo-surface);
+    border: 1px solid var(--cfo-border);
+    border-radius: 13px;
+}
+
+.cfo-metric span,
+.cfo-metric small {
+    display: block;
+    color: var(--cfo-muted);
+    font-size: 12px;
+}
+
+.cfo-metric strong {
+    display: block;
+    margin: 12px 0 8px;
+    font-family: 'Manrope', sans-serif;
+    font-size: clamp(20px, 2.4vw, 30px);
+    font-weight: 800;
+    line-height: 1.2;
+    overflow-wrap: anywhere;
+}
+
+.cfo-metric.cfo-net {
+    border-top: 3px solid var(--cfo-green);
+}
+
+.cfo-chart-panel {
+    margin-top: 20px;
+    padding: 22px 18px 12px;
+    border: 1px solid var(--cfo-border);
+    border-radius: 13px;
+    background: var(--cfo-surface);
+}
+
+.cfo-chart-heading {
+    margin-bottom: 12px;
+}
+
+.cfo-chart-heading h3 {
+    margin-bottom: 4px;
+    font-family: 'Manrope', sans-serif;
+    font-size: 17px;
+    font-weight: 700;
+}
+
+.cfo-chart-legend {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    color: var(--cfo-muted);
+    font-size: 12px;
+    white-space: nowrap;
+}
+
+.cfo-chart-legend i {
+    display: inline-block;
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    background: var(--cfo-green);
+}
+
+.cfo-chart-wrap {
+    position: relative;
+    min-height: 280px;
+}
+
+#cfoRevenueChart {
+    display: block;
+    width: 100%;
+    height: 280px;
+}
+
+.cfo-chart-empty {
+    padding: 35px 8px;
+    color: var(--cfo-muted);
+    font-size: 13px;
+    text-align: center;
+}
+
+.cfo-status {
+    min-height: 18px;
+    margin-top: 13px;
+    color: var(--cfo-muted);
+    font-size: 11px;
+}
+
+/* Dark mode applies only to the CFO section. */
+.cfo-panel.cfo-dark {
+    --cfo-surface: #171e19;
+    --cfo-text: #eef5ef;
+    --cfo-muted: #aab7ad;
+    --cfo-border: #35443a;
+    --cfo-green: #80c995;
+    --cfo-grid: #344238;
+
+    background: var(--cfo-surface);
+    color: var(--cfo-text);
+}
+
+.cfo-panel.cfo-dark .cfo-period-button.is-active {
+    color: #152018;
+}
+
+@media (max-width: 700px) {
+    .cfo-heading {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+
+    .cfo-summary-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cfo-period-controls {
+        gap: 8px;
+    }
+
+    .cfo-refresh-button {
+        margin-left: 0;
+    }
+
+    .cfo-metric {
+        padding: 17px;
+    }
+}
+
+/* Admin navbar actions */
+.admin-nav {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.cfo-track-nav {
+    padding: 11px 18px;
+    border: 1px solid var(--border, #e8e8df);
+    border-radius: 9px;
+    background: var(--surface, #fff);
+    color: var(--green, #2e6b45);
+    font: inherit;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.cfo-track-nav:hover,
+.cfo-track-nav[aria-expanded="true"] {
+    background: var(--light-green, #edf3e9);
+}
+
+#cfoReport[hidden] {
+    display: none !important;
+}
+
+.cfo-chart-wrap {
+    position: relative;
+}
+
+.cfo-hover-tooltip {
+    position: absolute;
+    z-index: 5;
+    display: none;
+    min-width: 145px;
+    padding: 10px 12px;
+    border: 1px solid var(--cfo-border, #e8e8df);
+    border-radius: 9px;
+    background: var(--cfo-surface, #fff);
+    color: var(--cfo-text, #20251f);
+    box-shadow: 0 6px 22px rgb(0 0 0 / 12%);
+    pointer-events: none;
+    font-size: 12px;
+    line-height: 1.6;
+}
+
+.cfo-hover-tooltip strong {
+    display: block;
+    margin-bottom: 3px;
+}
+
+#cfoRevenueChart {
+    cursor: crosshair;
+}
+
+@media (max-width: 520px) {
+    .admin-nav {
+        gap: 6px;
+    }
+
+    .cfo-track-nav {
+        padding: 10px 12px;
+    }
+}
+
+
+.cfo-track-nav {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 11px 18px;
+    border: 1px solid var(--border, #e8e8df);
+    border-radius: 9px;
+    background: var(--surface, #fff);
+    color: var(--green, #2e6b45);
+    font: inherit;
+    font-weight: 700;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.cfo-track-nav:hover {
+    background: var(--light-green, #edf3e9);
+}

@@ -20,7 +20,9 @@ const {
     getAssignedItems,
     updateAssignedItemStatus,
     getMenuItemAssignments,
-    updateMenuItemAssignments
+    updateMenuItemAssignments,
+    deleteMenuItem,
+    getRevenueAnalytics
 } = require("../controllers/adminController");
 
 // Require admin authentication for every admin API route.
@@ -60,5 +62,9 @@ router.patch(
 router.get("/assignments", getMenuItemAssignments);
 
 router.put("/items/:id/admins", updateMenuItemAssignments);
+
+router.delete("/items/:id", deleteMenuItem);
+// CFO financial analytics
+router.get("/revenue-analytics", getRevenueAnalytics);
 
 module.exports = router;
